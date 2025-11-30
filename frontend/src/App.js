@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { ThemeProvider } from 'next-themes';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import About from './components/About';
@@ -8,6 +9,7 @@ import Projects from './components/Projects';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
 import DemoOne from './components/DemoOne';
+import DemoTwo from './components/DemoTwo';
 
 const Portfolio = () => {
   return (
@@ -27,12 +29,15 @@ const Portfolio = () => {
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Portfolio />} />
-        <Route path="/demo" element={<DemoOne />} />
-      </Routes>
-    </BrowserRouter>
+    <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Portfolio />} />
+          <Route path="/demo" element={<DemoOne />} />
+          <Route path="/demo-blur" element={<DemoTwo />} />
+        </Routes>
+      </BrowserRouter>
+    </ThemeProvider>
   );
 }
 

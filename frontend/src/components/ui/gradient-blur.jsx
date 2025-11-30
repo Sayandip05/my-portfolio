@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useCallback } from "react"
 
 export function GradientBlur({
   radius = 60,
@@ -22,8 +22,8 @@ export function GradientBlur({
     return rgb
   }
 
-  // ✅ Updated: if color prop exists, use it; otherwise use generator
-  const getColor = () => color || colorGenerator?.() || defaultColorGenerator()
+  // ✅ Wrapped in useCallback to satisfy linter
+  const getColor = useCallback(() => color || colorGenerator?.() || defaultColorGenerator(), [color, colorGenerator])
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -114,7 +114,7 @@ export function GradientBlur({
       window.removeEventListener("touchmove", handleTouchMove)
       window.removeEventListener("resize", resizeCanvas)
     }
-  }, [radius, opacityDecay, backgroundColor, color, colorGenerator])
+  }, [radius, opacityDecay, backgroundColor, getColor]) // Updated dependency
 
   return (
     <div className="relative w-full h-screen overflow-hidden cursor-move">

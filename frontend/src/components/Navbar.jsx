@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Menu, X, Sun, Moon, Download } from 'lucide-react';
+import { useTheme } from 'next-themes';
 import { Button } from './ui/button';
 import { Switch } from './ui/switch';
 import { cn } from '../lib/utils';
@@ -7,14 +8,13 @@ import { cn } from '../lib/utils';
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  
-  // Initialize theme from localStorage or default to 'dark'
-  const [theme, setTheme] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('theme') || 'dark';
-    }
-    return 'dark';
-  });
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  // Avoid hydration mismatch
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -24,24 +24,8 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Apply theme class
-  useEffect(() => {
-    const root = document.documentElement;
-    if (theme === 'light') {
-      root.classList.add('light');
-      root.classList.remove('dark');
-    } else {
-      root.classList.add('dark');
-      root.classList.remove('light');
-    }
-    localStorage.setItem('theme', theme);
-    
-    // Dispatch event for other components
-    window.dispatchEvent(new Event('theme-change'));
-  }, [theme]);
-
   const toggleTheme = () => {
-    setTheme(prev => prev === 'dark' ? 'light' : 'dark');
+    setTheme(theme === 'dark' ? 'light' : 'dark');
   };
   
   const navLinks = [
@@ -80,16 +64,18 @@ const Navbar = () => {
         {/* Actions */}
         <div className="hidden md:flex items-center gap-4">
             {/* Theme Toggle */}
-            <div className="flex items-center space-x-2 mr-2">
-                <Sun className={`h-4 w-4 transition-colors ${theme === 'light' ? 'text-yellow-500' : 'text-muted-foreground'}`} />
-                <Switch 
-                    checked={theme === 'dark'}
-                    onCheckedChange={toggleTheme}
-                    aria-label="Toggle theme"
-                    className="data-[state=checked]:bg-primary"
-                />
-                <Moon className={`h-4 w-4 transition-colors ${theme === 'dark' ? 'text-blue-400' : 'text-muted-foreground'}`} />
-            </div>
+            {mounted && (
+              <div className="flex items-center space-x-2 mr-2">
+                  <Sun className={`h-4 w-4 transition-colors ${theme === 'light' ? 'text-yellow-500' : 'text-muted-foreground'}`} />
+                  <Switch 
+                      checked={theme === 'dark'}
+                      onCheckedChange={toggleTheme}
+                      aria-label="Toggle theme"
+                      className="data-[state=checked]:bg-primary"
+                  />
+                  <Moon className={`h-4 w-4 transition-colors ${theme === 'dark' ? 'text-blue-400' : 'text-muted-foreground'}`} />
+              </div>
+            )}
             
             <Button variant="outline" size="sm" className="gap-2" asChild>
                 <a href="/resume.pdf" target="_blank">
@@ -121,17 +107,19 @@ const Navbar = () => {
             </a>
           ))}
            
-           <div className="flex items-center justify-between py-4 border-b border-border/10">
-               <span className="text-muted-foreground">Theme</span>
-               <div className="flex items-center space-x-2">
-                    <Sun className={`h-4 w-4 ${theme === 'light' ? 'text-yellow-500' : 'text-muted-foreground'}`} />
-                    <Switch 
-                        checked={theme === 'dark'}
-                        onCheckedChange={toggleTheme}
-                    />
-                    <Moon className={`h-4 w-4 ${theme === 'dark' ? 'text-blue-400' : 'text-muted-foreground'}`} />
-                </div>
-           </div>
+           {mounted && (
+             <div className="flex items-center justify-between py-4 border-b border-border/10">
+                 <span className="text-muted-foreground">Theme</span>
+                 <div className="flex items-center space-x-2">
+                      <Sun className={`h-4 w-4 ${theme === 'light' ? 'text-yellow-500' : 'text-muted-foreground'}`} />
+                      <Switch 
+                          checked={theme === 'dark'}
+                          onCheckedChange={toggleTheme}
+                      />
+                      <Moon className={`h-4 w-4 ${theme === 'dark' ? 'text-blue-400' : 'text-muted-foreground'}`} />
+                  </div>
+             </div>
+           )}
 
            <Button variant="outline" className="w-full justify-start gap-2 mt-2" asChild>
                 <a href="/resume.pdf" target="_blank">

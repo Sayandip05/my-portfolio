@@ -67,9 +67,9 @@ const Contact = () => {
             transition={{ duration: 0.6 }}
           >
             <div>
-              <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">Let's Work Together</h2>
+              <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">Let&apos;s Work Together</h2>
               <p className="text-muted-foreground text-lg">
-                Have a project in mind or want to discuss the latest in AI? I'm always open to new opportunities and collaborations.
+                Have a project in mind or want to discuss the latest in AI? I&apos;m always open to new opportunities and collaborations.
               </p>
             </div>
 
