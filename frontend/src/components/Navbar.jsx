@@ -1,12 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { Menu, X, Sun, Moon, Download } from 'lucide-react';
 import { Button } from './ui/button';
+import { Switch } from './ui/switch';
 import { cn } from '../lib/utils';
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [theme, setTheme] = useState('dark');
+  
+  // Initialize theme from localStorage or default to 'dark'
+  const [theme, setTheme] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('theme') || 'dark';
+    }
+    return 'dark';
+  });
 
   useEffect(() => {
     const handleScroll = () => {
@@ -16,11 +24,24 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Apply theme class
+  useEffect(() => {
+    const root = document.documentElement;
+    if (theme === 'light') {
+      root.classList.add('light');
+      root.classList.remove('dark');
+    } else {
+      root.classList.add('dark');
+      root.classList.remove('light');
+    }
+    localStorage.setItem('theme', theme);
+    
+    // Dispatch event for other components
+    window.dispatchEvent(new Event('theme-change'));
+  }, [theme]);
+
   const toggleTheme = () => {
-    const newTheme = theme === 'dark' ? 'light' : 'dark';
-    setTheme(newTheme);
-    document.documentElement.classList.toggle('dark'); // Toggle class on html element if using class strategy
-    // For this specific setup, we might need to handle root class manually if not fully automated
+    setTheme(prev => prev === 'dark' ? 'light' : 'dark');
   };
   
   const navLinks = [
@@ -58,10 +79,17 @@ const Navbar = () => {
 
         {/* Actions */}
         <div className="hidden md:flex items-center gap-4">
-            {/* Theme Toggle - Hidden for now as per requirement to focus on Dark first, but structure is here */}
-            {/* <Button variant="ghost" size="icon" onClick={toggleTheme}>
-                {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-            </Button> */}
+            {/* Theme Toggle */}
+            <div className="flex items-center space-x-2 mr-2">
+                <Sun className={`h-4 w-4 transition-colors ${theme === 'light' ? 'text-yellow-500' : 'text-muted-foreground'}`} />
+                <Switch 
+                    checked={theme === 'dark'}
+                    onCheckedChange={toggleTheme}
+                    aria-label="Toggle theme"
+                    className="data-[state=checked]:bg-primary"
+                />
+                <Moon className={`h-4 w-4 transition-colors ${theme === 'dark' ? 'text-blue-400' : 'text-muted-foreground'}`} />
+            </div>
             
             <Button variant="outline" size="sm" className="gap-2" asChild>
                 <a href="/resume.pdf" target="_blank">
@@ -92,6 +120,19 @@ const Navbar = () => {
               {link.name}
             </a>
           ))}
+           
+           <div className="flex items-center justify-between py-4 border-b border-border/10">
+               <span className="text-muted-foreground">Theme</span>
+               <div className="flex items-center space-x-2">
+                    <Sun className={`h-4 w-4 ${theme === 'light' ? 'text-yellow-500' : 'text-muted-foreground'}`} />
+                    <Switch 
+                        checked={theme === 'dark'}
+                        onCheckedChange={toggleTheme}
+                    />
+                    <Moon className={`h-4 w-4 ${theme === 'dark' ? 'text-blue-400' : 'text-muted-foreground'}`} />
+                </div>
+           </div>
+
            <Button variant="outline" className="w-full justify-start gap-2 mt-2" asChild>
                 <a href="/resume.pdf" target="_blank">
                     <Download className="h-4 w-4" /> Download Resume

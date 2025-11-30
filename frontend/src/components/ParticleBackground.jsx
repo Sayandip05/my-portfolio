@@ -20,6 +20,18 @@ const ParticleBackground = () => {
     const particleCount = 60;
     const connectionDistance = 150;
 
+    // Determine color based on theme
+    const getParticleColor = () => {
+        const isLight = document.documentElement.classList.contains('light');
+        return isLight ? 'rgba(0, 0, 0, 0.2)' : 'rgba(255, 255, 255, 0.2)';
+    };
+    
+    const getConnectionColor = (dist) => {
+        const isLight = document.documentElement.classList.contains('light');
+        const baseColor = isLight ? '0, 0, 0' : '255, 255, 255';
+        return `rgba(${baseColor}, ${0.1 * (1 - dist / connectionDistance)})`;
+    };
+
     class Particle {
       constructor() {
         this.x = Math.random() * canvas.width;
@@ -38,7 +50,7 @@ const ParticleBackground = () => {
       }
 
       draw() {
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.2)'; // Subtle white
+        ctx.fillStyle = getParticleColor();
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
         ctx.fill();
@@ -46,6 +58,7 @@ const ParticleBackground = () => {
     }
 
     const init = () => {
+      particles.length = 0; // Clear existing
       for (let i = 0; i < particleCount; i++) {
         particles.push(new Particle());
       }
@@ -69,7 +82,7 @@ const ParticleBackground = () => {
           const distance = Math.sqrt(dx * dx + dy * dy);
 
           if (distance < connectionDistance) {
-            ctx.strokeStyle = `rgba(255, 255, 255, ${0.1 * (1 - distance / connectionDistance)})`;
+            ctx.strokeStyle = getConnectionColor(distance);
             ctx.lineWidth = 1;
             ctx.beginPath();
             ctx.moveTo(a.x, a.y);
@@ -84,9 +97,17 @@ const ParticleBackground = () => {
 
     init();
     animate();
+    
+    // Listen for theme changes to trigger re-render style immediately (mostly handled by draw loop but ensures sync)
+    const handleThemeChange = () => {
+        // The draw loop checks color every frame, so technically valid.
+        // But forcing a clear might be nice.
+    };
+    window.addEventListener('theme-change', handleThemeChange);
 
     return () => {
       window.removeEventListener('resize', resizeCanvas);
+      window.removeEventListener('theme-change', handleThemeChange);
       cancelAnimationFrame(animationFrameId);
     };
   }, []);
