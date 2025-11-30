@@ -2,6 +2,7 @@ import React from 'react';
 import { profile } from '../data/mock';
 import { Card, CardContent } from './ui/card';
 import { CheckCircle2 } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 const About = () => {
   return (
@@ -10,7 +11,13 @@ const About = () => {
         <div className="grid md:grid-cols-2 gap-16 items-center">
           
           {/* Left: Bio */}
-          <div className="space-y-8">
+          <motion.div 
+            className="space-y-8"
+            initial={{ opacity: 0, x: -50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.6 }}
+          >
             <h2 className="text-3xl md:text-4xl font-bold tracking-tight">
               About Me
             </h2>
@@ -43,17 +50,25 @@ const About = () => {
                     </li>
                 </ul>
              </div>
-          </div>
+          </motion.div>
 
           {/* Right: Stats/Visuals */}
           <div className="grid grid-cols-2 gap-4">
             {profile.highlights.map((item, index) => (
-              <Card key={index} className="border-border/50 bg-card/50 backdrop-blur-sm hover:border-primary/20 transition-colors">
-                <CardContent className="p-6 flex flex-col items-center justify-center text-center h-full min-h-[160px]">
-                  <span className="text-4xl font-bold text-foreground mb-2">{item.value}</span>
-                  <span className="text-sm text-muted-foreground">{item.label}</span>
-                </CardContent>
-              </Card>
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+              >
+                <Card className="border-border/50 bg-card/50 backdrop-blur-sm hover:border-primary/20 transition-colors">
+                  <CardContent className="p-6 flex flex-col items-center justify-center text-center h-full min-h-[160px]">
+                    <span className="text-4xl font-bold text-foreground mb-2">{item.value}</span>
+                    <span className="text-sm text-muted-foreground">{item.label}</span>
+                  </CardContent>
+                </Card>
+              </motion.div>
             ))}
           </div>
         </div>

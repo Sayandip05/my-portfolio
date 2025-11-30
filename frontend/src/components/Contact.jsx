@@ -10,6 +10,7 @@ import { Mail, Phone, MapPin, Github, Linkedin, Twitter, Copy, Check } from 'luc
 import { profile } from '../data/mock';
 import { toast } from '../hooks/use-toast'; 
 import { Toaster } from './ui/toaster';
+import { motion } from 'framer-motion';
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
@@ -58,7 +59,13 @@ const Contact = () => {
         <div className="grid lg:grid-cols-2 gap-16">
           
           {/* Contact Info */}
-          <div className="space-y-8">
+          <motion.div 
+            className="space-y-8"
+            initial={{ opacity: 0, x: -50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
             <div>
               <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">Let's Work Together</h2>
               <p className="text-muted-foreground text-lg">
@@ -100,10 +107,16 @@ const Contact = () => {
                 </Button>
               </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Contact Form */}
-          <div className="bg-card border border-border/50 rounded-2xl p-8 shadow-lg">
+          <motion.div 
+            className="bg-card border border-border/50 rounded-2xl p-8 shadow-lg"
+            initial={{ opacity: 0, x: 50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <div className="space-y-2">
                 <label className="text-sm font-medium">Name</label>
@@ -150,7 +163,7 @@ const Contact = () => {
                 {isSubmitting ? "Sending..." : "Send Message"}
               </Button>
             </form>
-          </div>
+          </motion.div>
         </div>
       </div>
       <Toaster />
