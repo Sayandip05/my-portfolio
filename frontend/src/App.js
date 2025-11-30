@@ -10,11 +10,6 @@ import Footer from './components/Footer';
 import DemoOne from './components/DemoOne';
 
 const Portfolio = () => {
-  // Force dark mode initially for portfolio
-  useEffect(() => {
-    document.documentElement.classList.add('dark');
-  }, []);
-
   return (
     <div className="min-h-screen bg-background text-foreground antialiased">
       <Navbar />
